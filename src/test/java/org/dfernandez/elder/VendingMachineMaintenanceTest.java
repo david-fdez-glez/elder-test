@@ -20,7 +20,7 @@ public class VendingMachineMaintenanceTest {
     }
 
     @Test
-    public void getQuantityItemZero() {
+    public void getQuantityProductZero() {
         assertEquals(0, vendingMachine.getProductQuantity("item-1"));
     }
 
@@ -28,9 +28,29 @@ public class VendingMachineMaintenanceTest {
     public void getQuantityNotExistingProduct() {
         assertEquals(-1, vendingMachine.getProductQuantity("item-not-existing"));
     }
+
     @Test
-    public void getPriceItem1NoSpecified() {
-        assertEquals(null, vendingMachine.getProductPrice("item-1"));
+    public void getQuantityProductFive(){
+        vendingMachine.setProductPrice("item-2", new BigDecimal(1.10));
+        vendingMachine.setProductQuantity("item-2", 5);
+        assertEquals(5, vendingMachine.getProductQuantity("item-2"));
+    }
+
+    @Test
+    public void setQuantityTwoProduct() {
+        vendingMachine.setProductPrice("item-3", new BigDecimal(0.85));
+        vendingMachine.setProductQuantity("item-3", 2);
+        assertEquals(2, vendingMachine.getProductQuantity("item-3"));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void setQuantityProductNoPriceSpecified() {
+        vendingMachine.setProductQuantity("item-4",4);
+    }
+
+    @Test
+    public void getPriceProductNoSpecified() {
+        assertEquals(null, vendingMachine.getProductPrice("item-5"));
     }
 
     @Test
@@ -40,31 +60,19 @@ public class VendingMachineMaintenanceTest {
 
     @Test
     public void setPriceProductFiftyPence() {
-        vendingMachine.setProductPrice("item-2",new BigDecimal(0.45));
-        assertEquals(new BigDecimal(0.45), vendingMachine.getProductPrice("item-2"));
+        vendingMachine.setProductPrice("item-6",new BigDecimal(0.5));
+        assertEquals(new BigDecimal(0.5), vendingMachine.getProductPrice("item-6"));
     }
 
     @Test
     public void getPriceProductOnePound() {
-        vendingMachine.setProductPrice("item-3", new BigDecimal(1.0));
-        assertEquals(new BigDecimal(1.0), vendingMachine.getProductPrice("item-3"));
+        vendingMachine.setProductPrice("item-7", new BigDecimal(1.0));
+        assertEquals(new BigDecimal(1.0), vendingMachine.getProductPrice("item-7"));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void setPriceProductNotExistingOnePound() {
         vendingMachine.setProductPrice("item-not-existing", new BigDecimal(1.0));
-    }
-
-    @Test
-    public void setQuantityTwoProduct() {
-        vendingMachine.setProductPrice("item-4", new BigDecimal(0.85));
-        vendingMachine.setProductQuantity("item-4", 2);
-        assertEquals(2, vendingMachine.getProductQuantity("item-4"));
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void setQuantityProductNoPriceSpecified() {
-        vendingMachine.setProductQuantity("item-5",5);
     }
 
     @Test
