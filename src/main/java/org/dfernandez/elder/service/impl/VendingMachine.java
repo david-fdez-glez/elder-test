@@ -34,7 +34,7 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
      * {@inheritDoc}
      */
     @Override
-    public int getProductQuantity(String name) {
+    public synchronized int getProductQuantity(String name) {
         if(productsAvailable.containsKey(name))
             return productsAvailable.get(name).getQuantity();
         return -1;
@@ -45,7 +45,7 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
      * {@inheritDoc}
      */
     @Override
-    public void setProductQuantity(String name, int quantity) throws IllegalStateException {
+    public synchronized void setProductQuantity(String name, int quantity) throws IllegalStateException {
         if(productsAvailable.containsKey(name)) {
             Product product = productsAvailable.get(name);
             if(product.getPrice() != null) {
@@ -61,7 +61,7 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
      * {@inheritDoc}
      */
     @Override
-    public BigDecimal getProductPrice(String name) {
+    public synchronized BigDecimal getProductPrice(String name) {
         if(productsAvailable.containsKey(name))
             return productsAvailable.get(name).getPrice();
         return null;
@@ -72,8 +72,7 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
      * {@inheritDoc}
      */
     @Override
-    public void setProductPrice(String name, BigDecimal price) throws IllegalArgumentException {
-
+    public synchronized void setProductPrice(String name, BigDecimal price) throws IllegalArgumentException {
         if(productsAvailable.containsKey(name)) {
             Product product = productsAvailable.get(name);
             product.setPrice(price);
@@ -87,7 +86,7 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
      * {@inheritDoc}
      */
     @Override
-    public int getCoinsAvailable(Coin coin) {
+    public synchronized int getCoinsAvailable(Coin coin) {
         if(coinsAvailable.containsKey(coin)) {
             return coinsAvailable.get(coin);
         }
@@ -99,7 +98,7 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
      * {@inheritDoc}
      */
     @Override
-    public void setCoinsAvailable(Coin coin, int quantity) throws IllegalStateException{
+    public synchronized void setCoinsAvailable(Coin coin, int quantity) throws IllegalStateException{
         if(coinsAvailable.containsKey(coin)) {
             coinsAvailable.put(coin, quantity);
         } else {
