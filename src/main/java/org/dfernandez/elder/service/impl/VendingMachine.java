@@ -80,7 +80,6 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
         } else {
             throw new IllegalArgumentException("Trying to set the price for " + name + " but the machine does not have it");
         }
-
     }
 
     /**
@@ -93,5 +92,18 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
             return coinsAvailable.get(coin);
         }
         return -1;
+    }
+
+    /**
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public void setCoinsAvailable(Coin coin, int quantity) throws IllegalStateException{
+        if(coinsAvailable.containsKey(coin)) {
+            coinsAvailable.put(coin, quantity);
+        } else {
+            throw new IllegalStateException("Trying to set the quantity for " + coin + " but the vending machine does not support it");
+        }
     }
 }

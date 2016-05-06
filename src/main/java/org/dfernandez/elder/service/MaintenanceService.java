@@ -14,7 +14,7 @@ public interface MaintenanceService {
     public int getProductQuantity(String name);
 
     /**
-     *
+     * Set num of items for a product slot
      * @param name
      * @param quantity
      * @throws IllegalStateException ​if setting the quantity of items for a product slot with no price specified
@@ -39,11 +39,16 @@ public interface MaintenanceService {
 
 
     /**
-     * Return number of coins available =
+     * Return number of coins available
      * @param coin
      * @return  number of coins available, or -1 if the machine does not have coin
      */
     public int getCoinsAvailable(Coin coin);
 
-
+    /**
+     * Set number of coins for a specific type
+     * @param coin
+     * @param quantity
+     */
+    public void setCoinsAvailable(Coin coin, int quantity) throws IllegalStateException;
 }
