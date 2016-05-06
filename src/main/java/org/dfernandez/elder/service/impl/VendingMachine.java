@@ -22,7 +22,6 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
             Product product = new Product("item-" + (i+1));
             productsAvailable.put(product.getName(),product);
         }
-
         for(Coin coin: availableCoins) {
             if(!coinsAvailable.containsKey(coin)) {
                 coinsAvailable.put(coin, 0);
@@ -36,7 +35,25 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
      */
     @Override
     public int getProductQuantity(String name) {
-        return productsAvailable.get(name).getQuantity();
+        if(productsAvailable.containsKey(name))
+            return productsAvailable.get(name).getQuantity();
+        return -1;
+    }
+
+    /**
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public void setProductQuantity(String name, int quantity) throws IllegalStateException {
+        if(productsAvailable.containsKey(name)) {
+            Product product = productsAvailable.get(name);
+            if(product.getPrice() != null) {
+                product.setQuantity(quantity);
+            } else {
+                throw new IllegalStateException("Trying to set the quantity for " + name + " but the price is not specified");
+            }
+        }
     }
 
     /**
@@ -45,7 +62,25 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
      */
     @Override
     public BigDecimal getProductPrice(String name) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        if(productsAvailable.containsKey(name))
+            return productsAvailable.get(name).getPrice();
+        return null;
+    }
+
+    /**
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public void setProductPrice(String name, BigDecimal price) throws IllegalArgumentException {
+
+        if(productsAvailable.containsKey(name)) {
+            Product product = productsAvailable.get(name);
+            product.setPrice(price);
+        } else {
+            throw new IllegalArgumentException("Trying to set the price for " + name + " but the machine does not have it");
+        }
+
     }
 
     /**
@@ -54,6 +89,9 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
      */
     @Override
     public int getCoinsAvailable(Coin coin) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        if(coinsAvailable.containsKey(coin)) {
+            return coinsAvailable.get(coin);
+        }
+        return -1;
     }
 }
