@@ -30,6 +30,10 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
     }
 
     /**
+     * Maintenance Service
+     */
+
+    /**
      *
      * {@inheritDoc}
      */
@@ -104,5 +108,22 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
         } else {
             throw new IllegalStateException("Trying to set the quantity for " + coin + " but the vending machine does not support it");
         }
+    }
+
+
+    /**
+     * Consumer Service
+     */
+
+
+    /**
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public synchronized BigDecimal getConsumerProductPrice(String name) {
+        if(productsAvailable.containsKey(name))
+            return productsAvailable.get(name).getPrice();
+        return null;
     }
 }
