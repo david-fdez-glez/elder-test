@@ -6,6 +6,7 @@ import org.dfernandez.elder.service.ConsumerService;
 import org.dfernandez.elder.service.MaintenanceService;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,5 +126,14 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
         if(productsAvailable.containsKey(name))
             return productsAvailable.get(name).getPrice();
         return null;
+    }
+
+    /**
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection<Coin> buyProduct(String name, List<Coin> moneyProvided) throws IllegalStateException, IllegalArgumentException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
