@@ -49,9 +49,7 @@
                             <mainClass>org.dfernandez.elder.App</mainClass>
                             <classpathPrefix>dependency-jars/</classpathPrefix>
                             <addClasspath>true</addClasspath>
-
                         </manifest>
-
                     </archive>
                 </configuration>
             </plugin>
