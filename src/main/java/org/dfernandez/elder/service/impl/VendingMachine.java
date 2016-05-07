@@ -6,16 +6,15 @@ import org.dfernandez.elder.service.ConsumerService;
 import org.dfernandez.elder.service.MaintenanceService;
 
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class VendingMachine implements ConsumerService,MaintenanceService{
 
     private Map<String,Product> productsAvailable = new HashMap<>();
 
     private Map<Coin, Integer> coinsAvailable = new HashMap<>();
+
+   // private final static Object mutex = new Object();
 
     public VendingMachine(int numProducts, List<Coin> availableCoins) {
         // Create List of Products
@@ -133,7 +132,156 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
      * {@inheritDoc}
      */
     @Override
-    public Collection<Coin> buyProduct(String name, List<Coin> moneyProvided) throws IllegalStateException, IllegalArgumentException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public synchronized Collection<Coin> buyProduct(String name, List<Coin> moneyProvided) throws IllegalStateException, IllegalArgumentException {
+
+        List<Coin> changeReturn = new ArrayList<>();
+        StringBuilder errorMessage = new StringBuilder();
+        // Items to buy
+        final int productItems = 1;
+
+        if(getIllegalState(name, productItems, errorMessage)) {
+            throw new IllegalStateException(errorMessage.toString());
+        }
+
+        if(getIllegalArgument(name, moneyProvided, errorMessage)) {
+            throw  new IllegalArgumentException(errorMessage.toString());
+        }
+
+
+
+        if(getChange(getSumMoneyProvided(moneyProvided).subtract(getProductPriceInternal(name)), true, changeReturn)) {
+            updateProductsQuantity(name,productItems);
+
+            getChange(getSumMoneyProvided(moneyProvided).subtract(getProductPriceInternal(name)), false, changeReturn);
+            return changeReturn;
+        }
+        throw  new IllegalStateException("Insufficient Coinage ");
+
+
+    }
+
+    /**
+     * Check if the item is sold out or if the item doesn't have a price
+     * @param name
+     * @return
+     */
+    private boolean getIllegalState(String name, int quantity, StringBuilder errorMessage) {
+          if(productsAvailable.containsKey(name)) {
+              Product product = productsAvailable.get(name);
+              if( (product.getQuantity() - quantity) <= 0  ) {
+                  errorMessage.append("Item is sold out");
+                  return true;
+              }
+              if(product.getPrice() == null) {
+                  errorMessage.append("Item doesn't have a price");
+                  return true;
+              }
+           }
+          return false;
+    }
+
+
+    /**
+     * check if on existing  product slot referenced or not enough money provided
+     * @param name
+     * @param moneyProvided
+     * @param errorMessage
+     * @return
+     */
+    private boolean getIllegalArgument(String name, List<Coin> moneyProvided, StringBuilder errorMessage) {
+
+        if(!productsAvailable.containsKey(name)) {
+            errorMessage.append("Non existing Product Slot Referenced: " + name);
+            return true;
+        }
+
+
+        if(productsAvailable.get(name).getPrice().compareTo(getSumMoneyProvided(moneyProvided)) > 0) {
+            errorMessage.append(" not enough money provided : " + name);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Decrease quantity times product name
+     * @param name
+     * @param quantity
+     */
+    private void updateProductsQuantity(String name, int quantity) {
+        if(productsAvailable.containsKey(name)) {
+            Product product = productsAvailable.get(name);
+            if(product.getPrice() != null) {
+                product.setQuantity(product.getQuantity() - quantity);
+            } else {
+                throw new IllegalStateException("Trying to set the quantity for " + name + " but the price is not specified");
+            }
+        }
+    }
+
+    private boolean getChange(BigDecimal pence, boolean isMock, List<Coin> changeList) {
+
+        BigDecimal amountLeft = pence;
+
+        for(Coin coin: Coin.values()) {
+            if(coinsAvailable.containsKey(coin)) {
+
+                while((amountLeft.compareTo(coin.getValue()) >=0) && getCoinAmount(coin) > 0) {
+
+                    amountLeft = amountLeft.subtract(coin.getValue());
+                     if(!isMock) {
+                         changeList.add(coin);
+                         updateCoinAmount(coin, -1);
+                     }
+
+                }
+            }
+
+        }
+
+        return amountLeft.compareTo(BigDecimal.ZERO) == 0;
+    }
+
+    /**
+     * return available Coin coin
+     * @param coin
+     * @return
+     */
+    private int getCoinAmount(Coin coin) {
+        return coinsAvailable.get(coin);
+    }
+
+    /**
+     * update number of coins
+     * @param coin
+     * @param amount
+     */
+    private void updateCoinAmount(Coin coin, int amount) {
+        coinsAvailable.put(coin, amount + getCoinAmount(coin));
+    }
+
+    /**
+     * get Product Price
+     * @param name
+     * @return
+     */
+    private BigDecimal getProductPriceInternal(String name) {
+        return productsAvailable.get(name).getPrice();
+    }
+
+    /**
+     * get Sum all of provided coins
+     * @param moneyProvided
+     * @return
+     */
+    private BigDecimal getSumMoneyProvided(List<Coin> moneyProvided) {
+
+        BigDecimal sum = new BigDecimal(0);
+        for(Coin coin:moneyProvided) {
+            sum = sum.add(coin.getValue());
+        }
+
+        return sum;
     }
 }

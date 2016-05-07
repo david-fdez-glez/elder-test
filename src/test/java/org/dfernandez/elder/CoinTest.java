@@ -16,36 +16,36 @@ public class CoinTest {
 
     @Test
     public void testCoinValueOnePound() {
-        assertEquals(Coin.ONE_POUND.getValue(), new BigDecimal(1.0));
+        assertEquals(Coin.ONE_POUND.getValue(), new BigDecimal("1.00"));
     }
 
     @Test
     public void testCoinValueFiftyPence() {
-        assertEquals(Coin.FIFTY_PENCE.getValue(), new BigDecimal(0.5));
+        assertEquals(Coin.FIFTY_PENCE.getValue(), new BigDecimal("0.50"));
     }
 
     @Test
     public void testCoinValueTwentyPence() {
-        assertEquals(Coin.TWENTY_PENCE.getValue(), new BigDecimal(0.2));
+        assertEquals(Coin.TWENTY_PENCE.getValue(), new BigDecimal("0.20"));
     }
 
     @Test
     public void testCoinValueTenPence() {
-        assertEquals(Coin.TEN_PENCE.getValue(), new BigDecimal(0.1));
+        assertEquals(Coin.TEN_PENCE.getValue(), new BigDecimal("0.10"));
     }
 
     @Test
     public void testCoinValueFivePence() {
-        assertEquals(Coin.FIVE_PENCE.getValue(), new BigDecimal(0.05));
+        assertEquals(Coin.FIVE_PENCE.getValue(), new BigDecimal("0.05"));
     }
 
     @Test
     public void testCoinValueTwoPence() {
-        assertEquals(Coin.TWO_PENCE.getValue(), new BigDecimal(0.02));
+        assertEquals(Coin.TWO_PENCE.getValue(), new BigDecimal("0.02"));
     }
 
     @Test
     public void testCoinValueOnePenny() {
-        assertEquals(Coin.ONE_PENNY.getValue(), new BigDecimal(0.01));
+        assertEquals(Coin.ONE_PENNY.getValue(), new BigDecimal("0.01"));
     }
 }
