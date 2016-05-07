@@ -151,7 +151,7 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
         // Temp add Coins to Machines Coins
         Map<Coin, Integer> tempCoinsAdded = tempAddCoinsToMachine(moneyProvided);
 
-        // Chcek if the vending machine has enough coins to return change
+        // Check if the vending machine has enough coins to return change
         if(getChange(moneyProvided, getProductPriceInternal(name), true, changeReturn)) {
             // update Products
             updateProductsQuantity(name,-productItems);
@@ -202,7 +202,6 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
             return true;
         }
 
-
         if(productsAvailable.get(name).getPrice().compareTo(getSumMoneyProvided(moneyProvided)) > 0) {
             errorMessage.append("Not enough money provided");
             return true;
@@ -229,7 +228,7 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
         for(Coin coin: Coin.values()) {
             if(coinsAvailable.containsKey(coin)) {
 
-                while((amountLeft.compareTo(coin.getValue()) >=0) && getCoinAmount(coin) > 0) {
+                while((amountLeft.compareTo(coin.getValue()) >= 0) && getCoinAmount(coin) > 0) {
 
                     amountLeft = amountLeft.subtract(coin.getValue());
                      if(!isMock) {
