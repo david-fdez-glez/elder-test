@@ -201,7 +201,7 @@ public class VendingMachineConsumerTest {
 
         expectedChange =  Arrays.asList(Coin.TWENTY_PENCE );
         assertThat(expectedChange, equalTo(vendingMachine.buyProduct("item-9", moneyProvided)));
-        assertEquals(0, vendingMachine.getCoinsAvailable(Coin.FIVE_PENCE));
+        assertEquals(0, vendingMachine.getCoinsAvailable(Coin.TWENTY_PENCE));
 
     }
     
