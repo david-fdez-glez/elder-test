@@ -34,16 +34,16 @@ public class ProductTest {
     @Test
     public void getProductPrice() {
         productTest = new Product("1");
-        productTest.setPrice(new BigDecimal(20));
-        assertEquals(new BigDecimal(20),productTest.getPrice());
+        productTest.setPrice(new BigDecimal("20"));
+        assertEquals(new BigDecimal("20"),productTest.getPrice());
     }
 
 
     @Test
     public void getProductPriceFiftyPence() {
         productTest = new Product("1");
-        productTest.setPrice(new BigDecimal(0.5));
-        assertEquals(new BigDecimal(0.5),productTest.getPrice());
+        productTest.setPrice(new BigDecimal("0.5"));
+        assertEquals(new BigDecimal("0.5"),productTest.getPrice());
     }
 
 }

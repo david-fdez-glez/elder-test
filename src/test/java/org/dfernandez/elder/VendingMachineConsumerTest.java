@@ -95,7 +95,6 @@ public class VendingMachineConsumerTest {
         vendingMachine.setCoinsAvailable(Coin.ONE_PENNY, 0);
 
         moneyProvided = Arrays.asList(Coin.ONE_POUND, Coin.ONE_POUND);
-
         expectedChange =  Arrays.asList(Coin.FIVE_PENCE, Coin.FIVE_PENCE, Coin.FIVE_PENCE, Coin.FIVE_PENCE);
         assertThat(expectedChange, equalTo(vendingMachine.buyProduct("item-5", moneyProvided)));
         assertEquals(1, vendingMachine.getCoinsAvailable(Coin.FIVE_PENCE));
@@ -197,12 +196,15 @@ public class VendingMachineConsumerTest {
         vendingMachine.setCoinsAvailable(Coin.TWO_PENCE, 0);
         vendingMachine.setCoinsAvailable(Coin.ONE_PENNY, 0);
 
+
         moneyProvided = Arrays.asList(Coin.ONE_POUND, Coin.FIFTY_PENCE, Coin.TWENTY_PENCE, Coin.TWENTY_PENCE, Coin.TEN_PENCE);
 
         expectedChange =  Arrays.asList(Coin.TWENTY_PENCE );
         assertThat(expectedChange, equalTo(vendingMachine.buyProduct("item-9", moneyProvided)));
-        assertEquals(0, vendingMachine.getCoinsAvailable(Coin.TWENTY_PENCE));
+
+        assertEquals(1, vendingMachine.getCoinsAvailable(Coin.TWENTY_PENCE));
 
     }
+
     
 }

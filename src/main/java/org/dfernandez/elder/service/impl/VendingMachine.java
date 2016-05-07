@@ -151,17 +151,18 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
         // Temp add Coins to Machines Coins
         Map<Coin, Integer> tempCoinsAdded = tempAddCoinsToMachine(moneyProvided);
 
-
+        // Chcek if the vending machine has enough coins to return change
         if(getChange(moneyProvided, getProductPriceInternal(name), true, changeReturn)) {
+            // update Products
             updateProductsQuantity(name,-productItems);
             getChange(moneyProvided, getProductPriceInternal(name), false, changeReturn);
             return changeReturn;
         }
+
         // error, remove coins added to Machine
         tempRemoveCoinsFromMachine(tempCoinsAdded);
 
         throw  new IllegalStateException("Insufficient Coinage ");
-
 
     }
 
@@ -327,7 +328,6 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
 
     }
 
-
     /**
      *  Remove tmp coins added to Machine
      * @param map
@@ -339,9 +339,7 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
             if(coinsAvailable.containsKey(coin)) {
                 // Remove coins
                 coinsAvailable.put(coin, coinsAvailable.get(coin)- entry.getValue());
-
             }
         }
-
     }
 }
