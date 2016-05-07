@@ -6,7 +6,9 @@ import static org.hamcrest.Matchers.equalTo;
 import org.dfernandez.elder.model.Coin;
 import org.dfernandez.elder.service.impl.VendingMachine;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -19,6 +21,11 @@ public class VendingMachineConsumerTest {
 
     List<Coin> expectedChange;
     List<Coin> moneyProvided;
+
+    @Rule
+    public ExpectedException expectedEx = ExpectedException.none();
+
+
     @Before
     public void init() {
         vendingMachine = new VendingMachine(20, Arrays.asList(Coin.values()));
@@ -94,6 +101,86 @@ public class VendingMachineConsumerTest {
         assertEquals(1, vendingMachine.getCoinsAvailable(Coin.FIVE_PENCE));
 
     }
-    
+
+    @Test
+    public void buyProductItemSoldOut() {
+        expectedEx.expect(IllegalStateException.class);
+        expectedEx.expectMessage("Item is sold out: item-6");
+        vendingMachine.setProductPrice("item-6",new BigDecimal("1.00"));
+        vendingMachine.setProductQuantity("item-6",0);
+        vendingMachine.setCoinsAvailable(Coin.ONE_POUND, 10);
+        vendingMachine.setCoinsAvailable(Coin.FIFTY_PENCE, 10);
+        vendingMachine.setCoinsAvailable(Coin.TWENTY_PENCE, 0);
+        vendingMachine.setCoinsAvailable(Coin.TEN_PENCE, 0);
+        vendingMachine.setCoinsAvailable(Coin.FIVE_PENCE, 5);
+        vendingMachine.setCoinsAvailable(Coin.TWO_PENCE, 0);
+        vendingMachine.setCoinsAvailable(Coin.ONE_PENNY, 0);
+
+        moneyProvided = Arrays.asList(Coin.ONE_POUND);
+
+        expectedChange =  Arrays.asList();
+        assertThat(expectedChange, equalTo(vendingMachine.buyProduct("item-6", moneyProvided)));
+
+    }
+
+    @Test
+    public void buyProductItemDoesNotHavePrice() {
+        expectedEx.expect(IllegalStateException.class);
+        expectedEx.expectMessage("Item doesn't have a price: item-7");
+        vendingMachine.setCoinsAvailable(Coin.ONE_POUND, 10);
+        vendingMachine.setCoinsAvailable(Coin.FIFTY_PENCE, 10);
+        vendingMachine.setCoinsAvailable(Coin.TWENTY_PENCE, 0);
+        vendingMachine.setCoinsAvailable(Coin.TEN_PENCE, 0);
+        vendingMachine.setCoinsAvailable(Coin.FIVE_PENCE, 5);
+        vendingMachine.setCoinsAvailable(Coin.TWO_PENCE, 0);
+        vendingMachine.setCoinsAvailable(Coin.ONE_PENNY, 0);
+
+        moneyProvided = Arrays.asList(Coin.ONE_POUND);
+
+        expectedChange =  Arrays.asList();
+        assertThat(expectedChange, equalTo(vendingMachine.buyProduct("item-7", moneyProvided)));
+
+    }
+
+    @Test
+    public void buyProductItemDoesNotExists() {
+        expectedEx.expect(IllegalArgumentException.class);
+        expectedEx.expectMessage("Non existing Product Slot Referenced: item-not-existing");
+        vendingMachine.setCoinsAvailable(Coin.ONE_POUND, 10);
+        vendingMachine.setCoinsAvailable(Coin.FIFTY_PENCE, 10);
+        vendingMachine.setCoinsAvailable(Coin.TWENTY_PENCE, 0);
+        vendingMachine.setCoinsAvailable(Coin.TEN_PENCE, 0);
+        vendingMachine.setCoinsAvailable(Coin.FIVE_PENCE, 5);
+        vendingMachine.setCoinsAvailable(Coin.TWO_PENCE, 0);
+        vendingMachine.setCoinsAvailable(Coin.ONE_PENNY, 0);
+
+        moneyProvided = Arrays.asList(Coin.ONE_POUND);
+
+        expectedChange =  Arrays.asList();
+        assertThat(expectedChange, equalTo(vendingMachine.buyProduct("item-not-existing", moneyProvided)));
+
+    }
+
+    @Test
+    public void buyProductItemNotEnoughMoneyProvided() {
+        expectedEx.expect(IllegalArgumentException.class);
+        expectedEx.expectMessage("Not enough money provided");
+        vendingMachine.setProductPrice("item-8",new BigDecimal("1.50"));
+        vendingMachine.setProductQuantity("item-8",10);
+
+        vendingMachine.setCoinsAvailable(Coin.ONE_POUND, 10);
+        vendingMachine.setCoinsAvailable(Coin.FIFTY_PENCE, 10);
+        vendingMachine.setCoinsAvailable(Coin.TWENTY_PENCE, 0);
+        vendingMachine.setCoinsAvailable(Coin.TEN_PENCE, 10);
+        vendingMachine.setCoinsAvailable(Coin.FIVE_PENCE, 5);
+        vendingMachine.setCoinsAvailable(Coin.TWO_PENCE, 10);
+        vendingMachine.setCoinsAvailable(Coin.ONE_PENNY, 0);
+
+        moneyProvided = Arrays.asList(Coin.ONE_POUND, Coin.TWENTY_PENCE, Coin.TEN_PENCE, Coin.TWO_PENCE);
+
+        vendingMachine.buyProduct("item-8", moneyProvided);
+
+
+    }
     
 }

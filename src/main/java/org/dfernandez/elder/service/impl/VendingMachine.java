@@ -151,7 +151,6 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
 
         if(getChange(getSumMoneyProvided(moneyProvided).subtract(getProductPriceInternal(name)), true, changeReturn)) {
             updateProductsQuantity(name,productItems);
-
             getChange(getSumMoneyProvided(moneyProvided).subtract(getProductPriceInternal(name)), false, changeReturn);
             return changeReturn;
         }
@@ -168,14 +167,15 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
     private boolean getIllegalState(String name, int quantity, StringBuilder errorMessage) {
           if(productsAvailable.containsKey(name)) {
               Product product = productsAvailable.get(name);
-              if( (product.getQuantity() - quantity) <= 0  ) {
-                  errorMessage.append("Item is sold out");
-                  return true;
-              }
               if(product.getPrice() == null) {
-                  errorMessage.append("Item doesn't have a price");
+                  errorMessage.append("Item doesn't have a price: " + name);
                   return true;
               }
+              if( (product.getQuantity() - quantity) <= 0  ) {
+                  errorMessage.append("Item is sold out: " + name);
+                  return true;
+              }
+
            }
           return false;
     }
@@ -197,7 +197,7 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
 
 
         if(productsAvailable.get(name).getPrice().compareTo(getSumMoneyProvided(moneyProvided)) > 0) {
-            errorMessage.append(" not enough money provided : " + name);
+            errorMessage.append("Not enough money provided");
             return true;
         }
 
