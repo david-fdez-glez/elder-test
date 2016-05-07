@@ -148,11 +148,18 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
             throw  new IllegalArgumentException(errorMessage.toString());
         }
 
-        if(getChange(getSumMoneyProvided(moneyProvided).subtract(getProductPriceInternal(name)), true, changeReturn)) {
-            updateProductsQuantity(name,productItems);
-            getChange(getSumMoneyProvided(moneyProvided).subtract(getProductPriceInternal(name)), false, changeReturn);
+        // Temp add Coins to Machines Coins
+        Map<Coin, Integer> tempCoinsAdded = tempAddCoinsToMachine(moneyProvided);
+
+
+        if(getChange(moneyProvided, getProductPriceInternal(name), true, changeReturn)) {
+            updateProductsQuantity(name,-productItems);
+            getChange(moneyProvided, getProductPriceInternal(name), false, changeReturn);
             return changeReturn;
         }
+        // error, remove coins added to Machine
+        tempRemoveCoinsFromMachine(tempCoinsAdded);
+
         throw  new IllegalStateException("Insufficient Coinage ");
 
 
@@ -203,32 +210,20 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
         return false;
     }
 
-    /**
-     * Decrease quantity times product name
-     * @param name
-     * @param quantity
-     */
-    private void updateProductsQuantity(String name, int quantity) {
-        if(productsAvailable.containsKey(name)) {
-            Product product = productsAvailable.get(name);
-            if(product.getPrice() != null) {
-                product.setQuantity(product.getQuantity() - quantity);
-            } else {
-                throw new IllegalStateException("Trying to set the quantity for " + name + " but the price is not specified");
-            }
-        }
-    }
+
+
 
     /**
      *   get the change for a given number of pence based on a limited supply of coins
-     * @param pence
+     * @param moneyProvided
+     * @param productPrice
      * @param isMock
      * @param changeList
      * @return  true if  the system is able to return the exact change, and if is able to, it will update outList
      */
-    private boolean getChange(BigDecimal pence, boolean isMock, List<Coin> changeList) {
+    private boolean getChange(List<Coin> moneyProvided,BigDecimal productPrice, boolean isMock, List<Coin> changeList) {
 
-        BigDecimal amountLeft = pence;
+        BigDecimal amountLeft = getSumMoneyProvided(moneyProvided).subtract(productPrice);
 
         for(Coin coin: Coin.values()) {
             if(coinsAvailable.containsKey(coin)) {
@@ -247,6 +242,22 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
         }
 
         return amountLeft.compareTo(BigDecimal.ZERO) == 0;
+    }
+
+    /**
+     * Change quantity times product name
+     * @param name
+     * @param quantity
+     */
+    private void updateProductsQuantity(String name, int quantity) {
+        if(productsAvailable.containsKey(name)) {
+            Product product = productsAvailable.get(name);
+            if(product.getPrice() != null) {
+                product.setQuantity(product.getQuantity() + quantity);
+            } else {
+                throw new IllegalStateException("Trying to set the quantity for " + name + " but the price is not specified");
+            }
+        }
     }
 
     /**
@@ -289,5 +300,48 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
         }
 
         return sum;
+    }
+
+
+    /**
+     * Add Coins provided to Machine Coins
+     * @param moneyProvided
+     * @return
+     */
+    private Map<Coin, Integer> tempAddCoinsToMachine(List<Coin> moneyProvided) {
+        Map<Coin, Integer>  map = new HashMap<>();
+
+        for(Coin coin: moneyProvided) {
+             if(coinsAvailable.containsKey(coin)) {
+                 // Add 1 Coin
+                 coinsAvailable.put(coin, coinsAvailable.get(coin) +1);
+                 // Save in a temp map coins added
+                 if(!map.containsKey(coin)) {
+                   map.put(coin, 1);
+                 } else {
+                     map.put(coin, map.get(coin) + 1);
+                 }
+             }
+        }
+         return map;
+
+    }
+
+
+    /**
+     *  Remove tmp coins added to Machine
+     * @param map
+     */
+    private void tempRemoveCoinsFromMachine( Map<Coin, Integer> map) {
+
+        for(Map.Entry<Coin, Integer> entry: map.entrySet()) {
+            Coin coin = entry.getKey();
+            if(coinsAvailable.containsKey(coin)) {
+                // Remove coins
+                coinsAvailable.put(coin, coinsAvailable.get(coin)- entry.getValue());
+
+            }
+        }
+
     }
 }

@@ -182,5 +182,27 @@ public class VendingMachineConsumerTest {
 
 
     }
+
+
+    @Test
+    public void buyProductOnePoundEightyPenceMoneyProvidedTwoPounds() {
+
+        vendingMachine.setProductPrice("item-9",new BigDecimal("1.80"));
+        vendingMachine.setProductQuantity("item-9",2);
+        vendingMachine.setCoinsAvailable(Coin.ONE_POUND, 0);
+        vendingMachine.setCoinsAvailable(Coin.FIFTY_PENCE, 0);
+        vendingMachine.setCoinsAvailable(Coin.TWENTY_PENCE, 0);
+        vendingMachine.setCoinsAvailable(Coin.TEN_PENCE, 0);
+        vendingMachine.setCoinsAvailable(Coin.FIVE_PENCE, 0);
+        vendingMachine.setCoinsAvailable(Coin.TWO_PENCE, 0);
+        vendingMachine.setCoinsAvailable(Coin.ONE_PENNY, 0);
+
+        moneyProvided = Arrays.asList(Coin.ONE_POUND, Coin.FIFTY_PENCE, Coin.TWENTY_PENCE, Coin.TWENTY_PENCE, Coin.TEN_PENCE);
+
+        expectedChange =  Arrays.asList(Coin.TWENTY_PENCE );
+        assertThat(expectedChange, equalTo(vendingMachine.buyProduct("item-9", moneyProvided)));
+        assertEquals(0, vendingMachine.getCoinsAvailable(Coin.FIVE_PENCE));
+
+    }
     
 }
