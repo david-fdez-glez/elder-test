@@ -14,7 +14,6 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
 
     private Map<Coin, Integer> coinsAvailable = new HashMap<>();
 
-   // private final static Object mutex = new Object();
 
     public VendingMachine(int numProducts, List<Coin> availableCoins) {
         // Create List of Products
@@ -139,15 +138,15 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
         // Items to buy
         final int productItems = 1;
 
+        // Check IllegalStateException
         if(getIllegalState(name, productItems, errorMessage)) {
             throw new IllegalStateException(errorMessage.toString());
         }
 
+        // Check    IllegalArgumentException
         if(getIllegalArgument(name, moneyProvided, errorMessage)) {
             throw  new IllegalArgumentException(errorMessage.toString());
         }
-
-
 
         if(getChange(getSumMoneyProvided(moneyProvided).subtract(getProductPriceInternal(name)), true, changeReturn)) {
             updateProductsQuantity(name,productItems);
@@ -220,6 +219,13 @@ public class VendingMachine implements ConsumerService,MaintenanceService{
         }
     }
 
+    /**
+     *   get the change for a given number of pence based on a limited supply of coins
+     * @param pence
+     * @param isMock
+     * @param changeList
+     * @return  true if  the system is able to return the exact change, and if is able to, it will update outList
+     */
     private boolean getChange(BigDecimal pence, boolean isMock, List<Coin> changeList) {
 
         BigDecimal amountLeft = pence;
